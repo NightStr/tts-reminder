@@ -13,6 +13,10 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
+    /// Громкость 1.0 - стандартнаая громкость. Чем выше число тем выше громкость
+    #[arg(short, long, default_value_t = 1.0)]
+    volume: f32,
+
     /// Частота повторений в секундах
     #[arg(short, long, default_value_t = 30)]
     repeat: u64,
@@ -31,11 +35,10 @@ fn main() {
     let args = Args::parse();
     dbg!("Параметры {:?}", &args);
 
-    let player_duration = Duration::new(5, 0);
-    let sleep_duration = Duration::new(args.repeat, 0) - player_duration;
+    let sleep_duration = Duration::new(args.repeat, 0);
 
     let file_repository = CachedVoicerssFileRepository::new(args.app_key);
-    let player = PlayFromFile::new(&file_repository, Duration::from_secs(5));
+    let player = PlayFromFile::new(args.volume, &file_repository);
     let repeater = repeaters::SimpleRepeater::new(
         args.message,
         &player
