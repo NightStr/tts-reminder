@@ -26,7 +26,11 @@ impl CachedVoicerssFileRepository {
                 text
             )
         ).unwrap();
-        if response.status().is_success() {
+        let content_type = response.headers().get("Content-Type")
+            .expect("Content-Type not found")
+            .to_str()
+            .expect("Content-Type is not ASCII");
+        if response.status().is_success() && content_type == "audio/wav" {
             if let Some(parent_dir) = Path::new(&filename).parent() {
                 if !parent_dir.exists() {
                     if let Err(err) = std::fs::create_dir_all(parent_dir) {
@@ -43,7 +47,10 @@ impl CachedVoicerssFileRepository {
             dbg!("Файл успешно загружен и сохранен: {}", filename);
         } else {
             // В случае неудачного ответа, выводим сообщение об ошибке
-            dbg!("Не удалось загрузить файл. Статус ответа: {}", response.status());
+            dbg!(
+                "Не удалось загрузить файл. Статус ответа: {:?}. Текст ответа: {:?}",
+                response.status(), response.text(),
+            );
             return Err("Не удалось загрузить файл");
         }
         Ok(())
