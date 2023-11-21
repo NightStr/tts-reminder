@@ -9,17 +9,20 @@ pub trait FileRepository {
 }
 
 
-pub struct CachedVoicerssFileRepository{}
+pub struct CachedVoicerssFileRepository{
+    app_key: String
+}
 
 impl CachedVoicerssFileRepository {
-    pub fn new() -> Self {
-        return CachedVoicerssFileRepository{}
+    pub fn new(app_key: String) -> Self {
+        return CachedVoicerssFileRepository{app_key}
     }
 
-    fn generate_file(text: &str, filename: &String) -> Result<(), &'static str> {
+    fn generate_file(&self, text: &str, filename: &String) -> Result<(), &'static str> {
         let response = reqwest::blocking::get(
             format!(
-                "http://api.voicerss.org/?key=716445ecb7f14a40a4570c19156121c4&hl=ru-ru&v=Marina&src={}",
+                "http://api.voicerss.org/?key={}&hl=ru-ru&v=Marina&src={}",
+                self.app_key,
                 text
             )
         ).unwrap();
@@ -56,7 +59,7 @@ impl FileRepository for CachedVoicerssFileRepository {
         let file_path = Path::new(&filename);
         if !file_path.exists() {
             dbg!("Генерируем файл");
-            if let Err(err) = Self::generate_file(text, &filename) {
+            if let Err(err) = self.generate_file(text, &filename,) {
                 return Err(err);
             }
         } else {

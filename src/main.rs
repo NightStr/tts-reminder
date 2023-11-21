@@ -20,6 +20,10 @@ struct Args {
     /// Сообщение
     #[arg(short, long)]
     message: String,
+
+    /// Ключ для voicerss
+    #[arg(short, long)]
+    app_key: String,
 }
 
 
@@ -30,7 +34,7 @@ fn main() {
     let player_duration = Duration::new(5, 0);
     let sleep_duration = Duration::new(args.repeat, 0) - player_duration;
 
-    let file_repository = CachedVoicerssFileRepository::new();
+    let file_repository = CachedVoicerssFileRepository::new(args.app_key);
     let player = PlayFromFile::new(&file_repository, Duration::from_secs(5));
     let repeater = repeaters::SimpleRepeater::new(
         args.message,
