@@ -15,7 +15,7 @@ pub struct PlayFromFile<'a> {
 
 impl<'a> PlayFromFile<'a> {
     pub fn new(volume: f32, file_repository: &'a dyn FileRepository) -> Self {
-        return PlayFromFile{volume, file_repository}
+        PlayFromFile{volume, file_repository}
     }
 }
 
@@ -28,6 +28,6 @@ impl<'a> Player for PlayFromFile<'a> {
         let sink = stream_handle.play_once(reader).unwrap();
         sink.set_volume(self.volume);
         sink.sleep_until_end();
-        return Ok(());
+        Ok(())
     }
 }

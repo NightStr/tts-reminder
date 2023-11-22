@@ -21,9 +21,7 @@ impl<'a> SimpleRepeater<'a> {
 impl<'a> Repeater for SimpleRepeater<'a> {
     fn repeat(&self, duration: Duration) -> Result<(), &str> {
         loop {
-            if let Err(e) = self.player.play(self.text.as_str()) {
-                return Err(e)
-            };
+            self.player.play(self.text.as_str())?;
             sleep(duration);
         }
     }

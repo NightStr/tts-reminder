@@ -15,13 +15,13 @@ pub struct CachedVoicerssFileRepository{
 
 impl CachedVoicerssFileRepository {
     pub fn new(app_key: String) -> Self {
-        return CachedVoicerssFileRepository{app_key}
+        CachedVoicerssFileRepository{app_key}
     }
 
     fn generate_file(&self, text: &str, filename: &String) -> Result<(), &'static str> {
         let response = reqwest::blocking::get(
             format!(
-                "http://api.voicerss.org/?key={}&hl=ru-ru&v=Marina&src={}",
+                "https://api.voicerss.org/?key={}&hl=ru-ru&v=Marina&src={}",
                 self.app_key,
                 text
             )
@@ -39,7 +39,7 @@ impl CachedVoicerssFileRepository {
                     }
                 }
             }
-            let mut file = File::create(&filename).unwrap();
+            let mut file = File::create(filename).unwrap();
 
             // Копируем содержимое ответа в файл
             copy(&mut response.bytes().unwrap().as_ref(), &mut file).unwrap();
@@ -66,12 +66,10 @@ impl FileRepository for CachedVoicerssFileRepository {
         let file_path = Path::new(&filename);
         if !file_path.exists() {
             dbg!("Генерируем файл");
-            if let Err(err) = self.generate_file(text, &filename,) {
-                return Err(err);
-            }
+            self.generate_file(text, &filename,)?;
         } else {
             dbg!("Берем файл из кэша");
         }
-        return Ok(File::open(&filename).unwrap());
+        Ok(File::open(&filename).unwrap())
     }
 }
