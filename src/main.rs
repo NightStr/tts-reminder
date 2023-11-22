@@ -34,16 +34,14 @@ struct Args {
 fn main() {
     let args = Args::parse();
     dbg!("Параметры {:?}", &args);
-
-    let sleep_duration = Duration::new(args.repeat, 0);
-
-    let file_repository = CachedVoicerssFileRepository::new(args.app_key);
-    let player = PlayFromFile::new(args.volume, &file_repository);
     let repeater = repeaters::SimpleRepeater::new(
         args.message,
-        &player
+        PlayFromFile::new(
+            args.volume,
+            CachedVoicerssFileRepository::new(args.app_key)
+        )
     );
-    if let Err(e) = repeater.repeat(sleep_duration) {
+    if let Err(e) = repeater.repeat(Duration::from_secs(args.repeat)) {
         eprintln!("{}", e);
     }
 }

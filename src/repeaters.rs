@@ -9,18 +9,18 @@ pub trait Repeater {
 }
 
 
-pub struct SimpleRepeater<'a> {
+pub struct SimpleRepeater<T: Player> {
     text: String,
-    player: &'a dyn Player
+    player: T
 }
 
-impl<'a> SimpleRepeater<'a> {
-    pub fn new(text: String, player: &'a dyn Player) -> Self {
+impl<T: Player> SimpleRepeater<T> {
+    pub fn new(text: String, player: T) -> Self {
         Self{text, player}
     }
 }
 
-impl<'a> Repeater for SimpleRepeater<'a> {
+impl<T: Player> Repeater for SimpleRepeater<T> {
     fn repeat(&self, duration: Duration) -> Result<()> {
         loop {
             self.player.play(self.text.as_str())?;

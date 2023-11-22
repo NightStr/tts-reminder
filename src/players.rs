@@ -9,18 +9,18 @@ pub trait Player {
 }
 
 
-pub struct PlayFromFile<'a> {
+pub struct PlayFromFile<T: FileRepository> {
     volume: f32,
-    file_repository: &'a dyn FileRepository
+    file_repository: T
 }
 
-impl<'a> PlayFromFile<'a> {
-    pub fn new(volume: f32, file_repository: &'a dyn FileRepository) -> Self {
+impl<T: FileRepository> PlayFromFile<T> {
+    pub fn new(volume: f32, file_repository: T) -> Self {
         PlayFromFile{volume, file_repository}
     }
 }
 
-impl<'a> Player for PlayFromFile<'a> {
+impl<T: FileRepository> Player for PlayFromFile<T> {
     fn play(&self, text: &str) -> Result<()> {
         let reader = BufReader::new(self.file_repository.get_file(text)?);
 

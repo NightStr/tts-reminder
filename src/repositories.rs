@@ -1,6 +1,7 @@
 use anyhow::{anyhow, Result};
 
 use std::collections::hash_map::DefaultHasher;
+use std::fmt::Display;
 use std::fs::File;
 use std::hash::{Hash, Hasher};
 use std::io::copy;
@@ -16,11 +17,11 @@ pub struct CachedVoicerssFileRepository{
 }
 
 impl CachedVoicerssFileRepository {
-    pub fn new(app_key: String) -> Self {
-        CachedVoicerssFileRepository{app_key}
+    pub fn new(app_key: impl Into<String>) -> Self {
+        CachedVoicerssFileRepository{app_key: app_key.into()}
     }
 
-    fn generate_file(&self, text: &str, filename: &String) -> Result<()> {
+    fn generate_file(&self, text: impl Display, filename: &str) -> Result<()> {
         let response = reqwest::blocking::get(
             format!(
                 "https://api.voicerss.org/?key={}&hl=ru-ru&v=Marina&src={}",
@@ -34,9 +35,7 @@ impl CachedVoicerssFileRepository {
             .expect("Content-Type is not ASCII");
         if response.status().is_success() && content_type == "audio/wav" {
             if let Some(parent_dir) = Path::new(&filename).parent() {
-                if !parent_dir.exists() {
-                    std::fs::create_dir_all(parent_dir)?
-                }
+                std::fs::create_dir_all(parent_dir)?;
             }
             let mut file = File::create(filename).unwrap();
 
