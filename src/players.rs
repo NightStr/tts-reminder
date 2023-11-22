@@ -1,10 +1,11 @@
+use anyhow::Result;
 use crate::repositories::FileRepository;
 
 use std::io::{BufReader};
 use rodio::{OutputStream};
 
 pub trait Player {
-    fn play(&self, text: &str) -> Result<(), &str>;
+    fn play(&self, text: &str) -> Result<()>;
 }
 
 
@@ -20,7 +21,7 @@ impl<'a> PlayFromFile<'a> {
 }
 
 impl<'a> Player for PlayFromFile<'a> {
-    fn play(&self, text: &str) -> Result<(), &str> {
+    fn play(&self, text: &str) -> Result<()> {
         let reader = BufReader::new(self.file_repository.get_file(text)?);
 
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();

@@ -1,9 +1,11 @@
+use anyhow::Result;
+
 use std::thread::sleep;
 use std::time::Duration;
 use crate::players::Player;
 
 pub trait Repeater {
-    fn repeat(&self, duration: Duration) -> Result<(), &str>;
+    fn repeat(&self, duration: Duration) -> Result<()>;
 }
 
 
@@ -19,7 +21,7 @@ impl<'a> SimpleRepeater<'a> {
 }
 
 impl<'a> Repeater for SimpleRepeater<'a> {
-    fn repeat(&self, duration: Duration) -> Result<(), &str> {
+    fn repeat(&self, duration: Duration) -> Result<()> {
         loop {
             self.player.play(self.text.as_str())?;
             sleep(duration);
